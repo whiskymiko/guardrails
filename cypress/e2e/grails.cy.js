@@ -1,4 +1,4 @@
-require('../support/commands')
+require('../support/commands');
 
 // Selectors
 const itemsInBasket = 'span.warn-notification';
@@ -23,7 +23,7 @@ describe('Checkout flows', () => {
 
     // Make sure there are no items in the basket
     cy.cleanBasket();
-  })
+  });
 
   it('Able to checkout with one item in the basket', () => {
     // Add an item to the basket

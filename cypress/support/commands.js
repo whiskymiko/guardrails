@@ -13,7 +13,7 @@ Cypress.Commands.add('login', (username, password) => {
     cy.get('.mat-grid-tile-content button').should('exist');
 });
 
-Cypress.Commands.add('closeWelcomePopup', (item) => {
+Cypress.Commands.add('closeWelcomePopup', () => {
     // Visit the page for the specified item
     cy.visit(`/`);
 
@@ -28,7 +28,7 @@ Cypress.Commands.add('addItemToBasket', (item) => {
     cy.get('.mat-simple-snack-bar-content', { timeout: 10000 }).should('exist');
 });
 
-Cypress.Commands.add('checkOut', (item) => {
+Cypress.Commands.add('checkOut', () => {
     // Click on the basket button
     cy.get('button').contains('Your Basket').click();
 
@@ -36,7 +36,7 @@ Cypress.Commands.add('checkOut', (item) => {
     cy.get('button#checkoutButton').click();
 });
 
-Cypress.Commands.add('addNewAddress', (item) => {
+Cypress.Commands.add('addNewAddress', () => {
     // Click on the button to add a new address
     cy.get('button.btn-new-address').click();
 
@@ -53,7 +53,7 @@ Cypress.Commands.add('addNewAddress', (item) => {
     cy.get('button#submitButton').click({force: true});
 });
 
-Cypress.Commands.add('cleanBasket', (item) => {
+Cypress.Commands.add('cleanBasket', () => {
     // We want to be sure that the basket is empty,
     // otherwise a message will pop up informing that there may be only 5 items in the basket
     // Ideally, it should be done by a seed before executing e2e tests
@@ -68,7 +68,7 @@ Cypress.Commands.add('cleanBasket', (item) => {
             // Clean the basket
             cy.get('svg.fa-trash-alt').parent().parent().each(($el) => {
                 $el.trigger('click');
-            })
+            });
 
             // Move to the shop
             cy.visit(`/`);
