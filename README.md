@@ -9,6 +9,8 @@ This document briefly explains both solutions
 - Node.js 16.x
 - Node.js 18.x and above
 
+However, I have tested 19.x, and it works like a charm.
+
 ### Installation
 
 Steps:

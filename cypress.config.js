@@ -8,7 +8,8 @@ module.exports = defineConfig({
     },
   },
   "retries": {
-    "runMode": 1, // Used for cypress run, defaults to 0
-    "openMode": 0 // Used for cypress open, defaults to 0
-  }
+    "runMode": 1, // Used for cypress run
+    "openMode": 0 // Used for cypress open
+  },
+  video: false
 });
