@@ -29,7 +29,7 @@ describe('Checkout flows', () => {
     cy.cleanBasket();
   });
 
-  it('Able to checkout with one item in the basket', () => {
+  it('Able to check out with one item in the basket', () => {
     // Add an item to the basket
     cy.addItemToBasket(firstItem);
 
@@ -43,7 +43,7 @@ describe('Checkout flows', () => {
     cy.addNewAddress();
   });
 
-  it('Able to checkout with two items in the basket', () => {
+  it('Able to check out with two items in the basket', () => {
     // Add an item to the basket
     cy.addItemToBasket(firstItem);
 
@@ -65,7 +65,7 @@ describe('Checkout flows', () => {
 });
 
 describe('Search flows', () => {
-  it('Able to checkout with two items in the basket', () => {
+  it('Able to search for Apple products', () => {
     // Visit the landing page
     cy.visit('/');
 
