@@ -3,6 +3,8 @@ const itemsInBasket = 'span.warn-notification';
 const itemName = 'div.item-name';
 
 // Test Data
+// it could be managed by fixtures, but it's my personal preference to keep test data in the code
+// Unless we have loads of them
 const loginEmail = 'aaa@aa.aa';
 const loginPassword = 'aaaaa';
 const firstItem = ' Apple Juice (1000ml) ';

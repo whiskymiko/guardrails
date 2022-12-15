@@ -41,6 +41,9 @@ Test Scenarios are located in grails.cy.js file:
 2. Search flows
 - **Able to search for Apple products** - Click on the search button, search for apple, verify that 2 apple products show up and that banana product doesn't show up
 
-
+Supporting commands are located in support folder:
+- shop - commands covering shop related actions
+- basket - commands for basket actions
+- commands - login command
 
 ## Postman
