@@ -2,18 +2,22 @@ require('../support/commands');
 
 // Selectors
 const itemsInBasket = 'span.warn-notification';
+const itemName = 'div.item-name';
 
 // Test Data
 const loginEmail = 'aaa@aa.aa';
 const loginPassword = 'aaaaa';
 const firstItem = ' Apple Juice (1000ml) ';
 const secondItem = ' Banana Juice (1000ml) ';
+const searchItem = 'Apple';
 
 describe('Checkout flows', () => {
   beforeEach(() => {
     // Recommended: Reset and seed the database before each test
-    // Why? A failure may leave items in the basket
     // cy.exec('npm run db:reset && npm run db:seed')
+
+    // Visit the login page
+    cy.visit('/login');
 
     // Close the welcome message on the main page
     cy.closeWelcomePopup();
@@ -62,6 +66,17 @@ describe('Checkout flows', () => {
 
 describe('Search flows', () => {
   it('Able to checkout with two items in the basket', () => {
+    // Visit the landing page
+    cy.visit('/');
 
+    // Close the Welcome Popup
+    cy.closeWelcomePopup();
+
+    // Search for an Apple product
+    cy.searchForItem(searchItem);
+
+    // Validate there are two Apple products, and no Bananas
+    cy.get(itemName).should('have.length', '2')
+        .and('contain', searchItem).and('not.contain', 'Banana');
   });
 });

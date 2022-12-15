@@ -19,12 +19,12 @@ const addressPhone = 'input#mat-input-5';
 const addressZip = 'input#mat-input-6';
 const addressAddress = '#address';
 const addressCity = 'input#mat-input-8';
-const addresState = 'input#mat-input-9';
+const addressState = 'input#mat-input-9';
+
+const searchIcon = '.mat-search_icon-search';
+const searchInput = 'input#mat-input-0';
 
 Cypress.Commands.add('login', (username, password) => {
-    // Visit the login page
-    cy.visit('/login');
-
     // Enter the username and password into the appropriate fields
     cy.get(loginEmail).type(username);
     cy.get(loginPassword).type(password);
@@ -37,9 +37,6 @@ Cypress.Commands.add('login', (username, password) => {
 });
 
 Cypress.Commands.add('closeWelcomePopup', () => {
-    // Visit the page for the specified item
-    cy.visit(`/`);
-
     // Click on the button to close the welcome message
     cy.get(welcomeMessage).click();
 });
@@ -70,7 +67,7 @@ Cypress.Commands.add('addNewAddress', () => {
     cy.get(addressZip).type('12345');
     cy.get(addressAddress).type('2222');
     cy.get(addressCity).type('Bangkok');
-    cy.get(addresState).type('Bang Na');
+    cy.get(addressState).type('Bang Na');
 
     // Click on the submit button to save the new address
     cy.get(submitButton).click({force: true});
@@ -98,4 +95,11 @@ Cypress.Commands.add('cleanBasket', () => {
             cy.visit(`/`);
         }
     });
+});
+Cypress.Commands.add('searchForItem', (searchItem) => {
+    // Click the Search Icon
+    cy.get(searchIcon).click();
+
+    // Search for an item
+    cy.get(searchInput).type(searchItem+'{Enter}');
 });
