@@ -4,7 +4,8 @@
   "description": "Homework",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "cy:run": "cypress run",
+    "cy:open": "cypress open",
     "lint:cypress": "eslint --ext .js,.ts,.tsx cypress"
   },
   "repository": {

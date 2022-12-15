@@ -7,4 +7,8 @@ module.exports = defineConfig({
       // implement node event listeners here
     },
   },
+  "retries": {
+    "runMode": 1, // Used for cypress run, defaults to 0
+    "openMode": 0 // Used for cypress open, defaults to 0
+  }
 });
