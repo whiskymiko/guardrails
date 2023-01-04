@@ -34,6 +34,8 @@ Tested rules:
 - no unused variables: error
 
 ### Structure
+**Note** the aaa@aa.aa user is required to be available in the DB.
+
 Test Scenarios are located in grails.cy.js file:
 1. Checkout flows
 - **Able to check out with one item in the basket** - Login with your user, add 1 item to the basket, click on checkout, add a new address, fill in the address form, click on submit.
