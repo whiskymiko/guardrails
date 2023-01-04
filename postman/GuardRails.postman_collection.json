@@ -1,0 +1,843 @@
+{
+	"info": {
+		"_postman_id": "9742a61a-9f67-45ba-9251-7d5973a5c969",
+		"name": "GuardRails",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25171640"
+	},
+	"item": [
+		{
+			"name": "Test Scenario 1",
+			"item": [
+				{
+					"name": "Add one item to the Basket",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// As the API does not allow us to add an Item which is already in the Basket",
+									"// We have to delete the Item beforehand (if exists).",
+									"",
+									"// Define async function to controle the execution flow",
+									"function sendRequest(req) {",
+									"    return new Promise((resolve, reject) => {",
+									"        pm.sendRequest(req, (err, res) => {",
+									"            if (err) {",
+									"                return reject(err);",
+									"            }",
+									"",
+									"            return resolve(res);",
+									"        })",
+									"    });",
+									"}",
+									"",
+									"// async Main function",
+									"(async function main() {",
+									"",
+									"//Firstly, check if an Item is in the Basket",
+									"const checkRequest = {",
+									"    url: pm.environment.get(\"basicUrl\") + \"/rest/basket/\" + pm.environment.get(\"basketId\"),",
+									"    method: 'GET',",
+									"    header: 'Content-Type: application/json',",
+									"    header: 'Authorization: Bearer '+pm.environment.get(\"auth_token\")",
+									"};",
+									"",
+									"const basketStatus = await sendRequest(checkRequest, function (err, response) {",
+									"    response.json().data.Products[0].BasketItem.id;",
+									"});",
+									"",
+									"// Remove all Items from the Basket if not empty",
+									"// If the Basket contains at least one Item",
+									"if(basketStatus.json().data.Products[0].BasketItem.id !== 'undefined'){",
+									"",
+									"    // For every Item in the Basket",
+									"    basketStatus.json().data.Products.forEach(deleteFunction);",
+									"",
+									"    // Delete an Item",
+									"    async function deleteFunction(item, index) {",
+									"        await sendRequest(",
+									"    {",
+									"        url: pm.environment.get(\"basicUrl\")+\"/api/BasketItems/\"+ item.BasketItem.id,",
+									"        method: 'DELETE',",
+									"        header: 'Content-Type: application/json',",
+									"        header: 'Authorization: Bearer '+pm.environment.get(\"auth_token\")",
+									"    }, function (err, response) {",
+									"        console.log(\"Before: deleting all Items ...\");",
+									"    });",
+									"    }",
+									"}",
+									"",
+									"})();"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status('OK');",
+									"});",
+									"",
+									"pm.test(\"Quantity test\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data.quantity).to.eql(1);",
+									"});",
+									"",
+									"pm.test(\"Product Id test\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data.ProductId).to.eql(6);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"ProductId\":6,\"BasketId\":\"{{basketId}}\",\"quantity\":1}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basicUrl}}/api/BasketItems/",
+							"host": [
+								"{{basicUrl}}"
+							],
+							"path": [
+								"api",
+								"BasketItems",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check there is one Item in the Basket",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status('OK');",
+									"});",
+									"",
+									"pm.test(\"should be only one Item in the Basket\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data.Products.length).to.eql(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Referer",
+								"value": "https://juice-shop.guardrails.ai/",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://juice-shop.guardrails.ai/rest/basket/{{basketId}}",
+							"protocol": "https",
+							"host": [
+								"juice-shop",
+								"guardrails",
+								"ai"
+							],
+							"path": [
+								"rest",
+								"basket",
+								"{{basketId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test Scenario 2",
+			"item": [
+				{
+					"name": "Add first Item to the Basket",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// As the API does not allow us to add an Item which is already in the Basket",
+									"// We have to delete the Item beforehand (if exists).",
+									"",
+									"// Define async function to controle the execution flow",
+									"function sendRequest(req) {",
+									"    return new Promise((resolve, reject) => {",
+									"        pm.sendRequest(req, (err, res) => {",
+									"            if (err) {",
+									"                return reject(err);",
+									"            }",
+									"",
+									"            return resolve(res);",
+									"        })",
+									"    });",
+									"}",
+									"",
+									"// async Main function",
+									"(async function main() {",
+									"",
+									"//Firstly, check if an Item is in the Basket",
+									"const checkRequest = {",
+									"    url: \"https://juice-shop.guardrails.ai/rest/basket/\" + pm.environment.get(\"basketId\"),",
+									"    method: 'GET',",
+									"    header: 'Content-Type: application/json',",
+									"    header: 'Authorization: Bearer '+pm.environment.get(\"auth_token\")",
+									"};",
+									"",
+									"const basketStatus = await sendRequest(checkRequest, function (err, response) {",
+									"    response.json().data.Products[0].BasketItem.id;",
+									"});",
+									"",
+									"// Remove all Items from the Basket if not empty",
+									"// If the Basket contains at least one Item",
+									"if(basketStatus.json().data.Products[0].BasketItem.id !== 'undefined'){",
+									"",
+									"    // For every Item in the Basket",
+									"    basketStatus.json().data.Products.forEach(deleteFunction);",
+									"",
+									"    // Delete an Item",
+									"    async function deleteFunction(item, index) {",
+									"        await sendRequest(",
+									"    {",
+									"        url: \"https://juice-shop.guardrails.ai/api/BasketItems/\"+ item.BasketItem.id,",
+									"        method: 'DELETE',",
+									"        header: 'Content-Type: application/json',",
+									"        header: 'Authorization: Bearer '+pm.environment.get(\"auth_token\")",
+									"    }, function (err, response) {",
+									"        console.log(\"Before: deleting all Items ...\");",
+									"    });",
+									"    }",
+									"}",
+									"",
+									"})();"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status('OK');",
+									"});",
+									"",
+									"pm.test(\"Quantity test\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data.quantity).to.eql(1);",
+									"});",
+									"",
+									"pm.test(\"Product Id test\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data.ProductId).to.eql(6);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"ProductId\":6,\"BasketId\":\"{{basketId}}\",\"quantity\":1}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://juice-shop.guardrails.ai/api/BasketItems/",
+							"protocol": "https",
+							"host": [
+								"juice-shop",
+								"guardrails",
+								"ai"
+							],
+							"path": [
+								"api",
+								"BasketItems",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add second Item to the Basket Copy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// We do not want to clean the Basket here"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status('OK');",
+									"});",
+									"",
+									"pm.test(\"Quantity test\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data.quantity).to.eql(1);",
+									"});",
+									"",
+									"pm.test(\"Product Id test\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data.ProductId).to.eql(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"ProductId\":1,\"BasketId\":\"{{basketId}}\",\"quantity\":1}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://juice-shop.guardrails.ai/api/BasketItems/",
+							"protocol": "https",
+							"host": [
+								"juice-shop",
+								"guardrails",
+								"ai"
+							],
+							"path": [
+								"api",
+								"BasketItems",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check there are two Items in the Basket Copy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status('OK');",
+									"});",
+									"",
+									"pm.test(\"should be only one Item in the Basket\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data.Products.length).to.eql(2);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Referer",
+								"value": "https://juice-shop.guardrails.ai/",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://juice-shop.guardrails.ai/rest/basket/{{basketId}}",
+							"protocol": "https",
+							"host": [
+								"juice-shop",
+								"guardrails",
+								"ai"
+							],
+							"path": [
+								"rest",
+								"basket",
+								"{{basketId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test Scenario 3",
+			"item": [
+				{
+					"name": "Add first Item to the Basket",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// As the API does not allow us to add an Item which is already in the Basket",
+									"// We have to delete the Item beforehand (if exists).",
+									"",
+									"// Define async function to controle the execution flow",
+									"function sendRequest(req) {",
+									"    return new Promise((resolve, reject) => {",
+									"        pm.sendRequest(req, (err, res) => {",
+									"            if (err) {",
+									"                return reject(err);",
+									"            }",
+									"",
+									"            return resolve(res);",
+									"        })",
+									"    });",
+									"}",
+									"",
+									"// async Main function",
+									"(async function main() {",
+									"",
+									"//Firstly, check if an Item is in the Basket",
+									"const checkRequest = {",
+									"    url: \"https://juice-shop.guardrails.ai/rest/basket/\" + pm.environment.get(\"basketId\"),",
+									"    method: 'GET',",
+									"    header: 'Content-Type: application/json',",
+									"    header: 'Authorization: Bearer '+pm.environment.get(\"auth_token\")",
+									"};",
+									"",
+									"const basketStatus = await sendRequest(checkRequest, function (err, response) {",
+									"    response.json().data.Products[0].BasketItem.id;",
+									"});",
+									"",
+									"// Remove all Items from the Basket if not empty",
+									"// If the Basket contains at least one Item",
+									"if(basketStatus.json().data.Products[0].BasketItem.id !== 'undefined'){",
+									"",
+									"    // For every Item in the Basket",
+									"    basketStatus.json().data.Products.forEach(deleteFunction);",
+									"",
+									"    // Delete an Item",
+									"    async function deleteFunction(item, index) {",
+									"        await sendRequest(",
+									"    {",
+									"        url: \"https://juice-shop.guardrails.ai/api/BasketItems/\"+ item.BasketItem.id,",
+									"        method: 'DELETE',",
+									"        header: 'Content-Type: application/json',",
+									"        header: 'Authorization: Bearer '+pm.environment.get(\"auth_token\")",
+									"    }, function (err, response) {",
+									"        console.log(\"Before: deleting all Items ...\");",
+									"    });",
+									"    }",
+									"}",
+									"",
+									"})();"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status('OK');",
+									"});",
+									"",
+									"pm.test(\"Quantity test\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data.quantity).to.eql(1);",
+									"});",
+									"",
+									"pm.test(\"Product Id test\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data.ProductId).to.eql(6);",
+									"",
+									"    // save the Item to be deleted later",
+									"    pm.collectionVariables.set(\"firstItem\", responseJson.data.id);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"ProductId\":6,\"BasketId\":\"{{basketId}}\",\"quantity\":1}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://juice-shop.guardrails.ai/api/BasketItems/",
+							"protocol": "https",
+							"host": [
+								"juice-shop",
+								"guardrails",
+								"ai"
+							],
+							"path": [
+								"api",
+								"BasketItems",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add second Item to the Basket",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// We do not want to clean the Basket here"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status('OK');",
+									"});",
+									"",
+									"pm.test(\"Quantity test\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data.quantity).to.eql(1);",
+									"});",
+									"",
+									"pm.test(\"Product Id test\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data.ProductId).to.eql(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"ProductId\":1,\"BasketId\":\"{{basketId}}\",\"quantity\":1}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://juice-shop.guardrails.ai/api/BasketItems/",
+							"protocol": "https",
+							"host": [
+								"juice-shop",
+								"guardrails",
+								"ai"
+							],
+							"path": [
+								"api",
+								"BasketItems",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete first Item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status('OK');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://juice-shop.guardrails.ai/api/BasketItems/{{firstItem}}",
+							"protocol": "https",
+							"host": [
+								"juice-shop",
+								"guardrails",
+								"ai"
+							],
+							"path": [
+								"api",
+								"BasketItems",
+								"{{firstItem}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check there is one Item in the Basket",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status('OK');",
+									"});",
+									"",
+									"pm.test(\"should be only one Item in the Basket\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.data.Products.length).to.eql(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Referer",
+								"value": "https://juice-shop.guardrails.ai/",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://juice-shop.guardrails.ai/rest/basket/{{basketId}}",
+							"protocol": "https",
+							"host": [
+								"juice-shop",
+								"guardrails",
+								"ai"
+							],
+							"path": [
+								"rest",
+								"basket",
+								"{{basketId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"const loginRequest = {",
+					"    url: pm.environment.get(\"basicUrl\")+\"/rest/user/login\",",
+					"    method: 'POST',",
+					"    header: 'Content-Type: application/json',",
+					"    body: {",
+					"        mode: 'application/json',",
+					"        raw: JSON.stringify({        ",
+					"            \"email\": \"bbb@bb.bb\",",
+					"            \"password\":\"bbbbb\"",
+					"        })",
+					"    }",
+					"};",
+					"pm.sendRequest(loginRequest, function (err, response) {",
+					"   pm.environment.set(\"auth_token\", response.json().authentication.token);",
+					"});"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "firstItem",
+			"value": ""
+		}
+	]
+}
