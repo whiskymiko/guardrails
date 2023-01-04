@@ -47,3 +47,5 @@ Supporting commands are located in support folder:
 - commands - login command
 
 ## Postman
+Postman collection (and its environment file) are located in /postman.
+The folder contains additional README file explaining the structure and import recommendations.
